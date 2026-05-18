@@ -1,0 +1,20 @@
+{
+  "model": "example-model-name",
+  "claimed_cutoff": "2024-06-01",
+  "evaluated_at": "2024-01-15T00:00:00Z",
+  "refract_version": "0.5.3",
+  "benchmark_commit": "a1b2c3d4e5f6",
+  "results": {
+    "total_claims_tested": 500,
+    "claims_after_cutoff_found": 12,
+    "leakage_rate": 0.024,
+    "per_page": [
+      {
+        "page": "COVID-19",
+        "claims_tested": 50,
+        "leaked": 3,
+        "leakage_rate": 0.06
+      }
+    ]
+  }
+}
