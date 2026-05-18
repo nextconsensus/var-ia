@@ -3,31 +3,39 @@
 [![CI](https://github.com/refract-org/refract/actions/workflows/ci.yml/badge.svg)](https://github.com/refract-org/refract/actions/workflows/ci.yml)
 [![Version](https://img.shields.io/github/v/release/refract-org/refract)](https://github.com/refract-org/refract/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
-[![npm scope](https://img.shields.io/badge/npm-%40refract-org-2563eb.svg)](https://www.npmjs.com/org/refract-org)
-[![MCP](https://img.shields.io/badge/MCP-server-6366f1.svg)](https://refract-org.github.io/refract-docs/mcp/)
 
-> **262 tests passing** · **26 event types** · **14 tutorials** · **0 dependencies beyond Bun**
 
-**The open claim-history layer for public knowledge.**
-**AI agents can use it. [→ `refract mcp`](https://refract-org.github.io/refract-docs/mcp/)**
-**Deterministic ground truth for model evaluation. [→ Tutorial](https://refract-org.github.io/refract-docs/tutorials/model-evaluation/)**
+> **v0.5.0+**: Events now carry 6 deterministic enrichment fields ([editMagnitude](#), [directionSignal](#), [certaintyProfile](#), etc.) — byte-reproducible, no model.
 
-> Refract reveals how claims change across public revision histories — where every
-> claim came from, what supported it, what challenged it, when it stabilized, and
-> what context altered its meaning.
+**Open infrastructure for agent-readable knowledge change.**
 
-Refract is the open claim-history layer for public knowledge — it ingests revision histories from
-Wikipedia, Fandom, and any MediaWiki instance, extracts a deterministic event stream
-of every claim, source, section, and dispute, and makes that stream queryable and
-reproducible. No model. No interpretation. Byte-for-byte identical on every run.
+> Refract turns source histories into replayable semantic change events about claims, citations, and evidence bindings — so AI systems and human teams can reason over how knowledge became current.
 
-Built and maintained by [NextConsensus](https://nextconsensus.com). Refract is
-domain-neutral infrastructure for observing how public knowledge changes.
+Refract is an open observation layer for changing knowledge. It ingests versioned and semi-versioned sources, computes structural and semantic change events, tracks claims and citations across time, and emits structured provenance events that downstream systems can query, replay, and audit.
+
+Most knowledge systems answer *what does this source say now?* Refract helps answer *what changed, when, where, and what did the record say at a specific point in time?*
+
+Built and maintained by [NextConsensus](https://nextconsensus.com). Domain-neutral infrastructure. Refract observes change. Applications interpret relevance.
+
 [Repository boundary](./docs/repository-boundary.md).
 
-![Concept Overview](https://refract-org.github.io/refract-docs/concept-overview.svg)
+---
 
-## Why It Exists
+## Core Concepts
+
+| Concept | Definition |
+|---------|-----------|
+| Source | A document, page, wiki, guideline, policy, or other knowledge artifact. |
+| Version | A captured state of a source at a point in time. |
+| Semantic Change Event | A structured representation of a meaningful change — a claim appearing, a citation shifting, a section moving, a dispute marker appearing. |
+| Claim | A discrete assertion detected or tracked across versions. |
+| Evidence Binding | The relationship between a claim and the sources used to support it at a given time. |
+| Replay | Reconstructing source state or claim state at a past time. |
+| Knowledge-State Memory | The system's ability to answer "what did we know then?" and "what changed since?" |
+
+Refract emits 26 deterministic event types — no model, no API, byte-reproducible on every run. These events are the substrate that provenance-aware systems build on.
+
+---## Why It Exists
 
 Machines do not just need more retrieved text. They need provenance, instability,
 disagreement, and temporal change — six things that a current snapshot cannot provide:
@@ -95,6 +103,31 @@ Each consumer brings their own interpretation layer on top of Refract's determin
 
 The common architecture: **Refract extracts the mechanical facts. The downstream system interprets what those facts mean for its domain.** No interpretation enters Refract's pipeline; no consumer re-extracts from raw revision history.
 
+
+## Why Refract Over Raw Wikipedia API?
+
+You could write a script that calls the Wikipedia API and parses diffs.
+Many people do. Here is what Refract gives you that a raw script does not:
+
+| Raw API script | Refract |
+|---------------|---------|
+| You parse revision diffs | 26 deterministic event types, already classified |
+| You track citations manually | Citation add/remove/replace with source lineage |
+| You guess at section changes | Section-aware diffs with movement, promotion, demotion |
+| You detect reverts by pattern matching | 6 regex patterns + edit cluster detection |
+| You correlate talk pages by hand | Automatic talk-page correlation and activity spikes |
+| Your output format is ad-hoc | Standardized JSON/NDJSON with deterministic event IDs |
+| You write your own replay logic | Replay manifests with Merkle proofs for auditability |
+| You maintain your own Wikipedia client | Rate limiting, retries, auth, pagination — built in |
+| Your results change when you re-run | Byte-reproducible — same input, same output every time |
+| You build your own timeline | Timeline builder with claim lifecycle tracking |
+
+Refract is not magic. It is the 800+ lines of brittle Wikipedia analysis code
+you would otherwise write and maintain, packaged as a deterministic,
+versioned, testable engine. See `examples/04-from-scratch-to-refract.ts`
+for a side-by-side comparison.
+
+
 ## Complementary technologies
 
 Refract pairs naturally with modern tools. The event stream is standard NDJSON — anything that reads JSON or speaks HTTP can consume it. See the [integrations docs](https://refract-org.github.io/refract-docs/integrations/) for full details.
@@ -117,52 +150,37 @@ Refract pairs naturally with modern tools. The event stream is standard NDJSON �
 
 ## Quick Start
 
+The fastest way to understand what Refract does:
+
 ```bash
-# 1. Analyze a page (zero install, no config needed)
+# 1. Run the guided onboarding (recommended first step)
+npx @refract-org/cli init
+
+# 2. Analyze any page
 npx @refract-org/cli analyze "Bitcoin" --depth brief
 
-# 2. View results in the web UI
-refract explore "Bitcoin"
+# 3. Open the local web explorer (starts a server at localhost:8899)
+npx @refract-org/cli explore "Bitcoin"
 
-# 3. Export as an ObservationReport with claim lifecycle
-refract analyze "Bitcoin" --report > bitcoin-report.json
+# 4. Export as JSON for your own tools
+npx @refract-org/cli analyze "Bitcoin" --json | jq .events[0]
 
-# 4. Save as a signed evidence bundle
-refract export "Bitcoin" --bundle > bitcoin-bundle.json
+# 5. Export as structured data
+npx @refract-org/cli export "Bitcoin" --format ndjson > bitcoin-events.ndjson
 ```
 
-> **What you're seeing**: These are observed changes — deterministic facts extracted from revision history. Refract reports what changed, not whether a claim is true or false.
+> **What you're seeing**: Refract reports deterministic, reproducible claim and citation changes. It does not decide whether a change is true or important — that's for downstream applications.
 
-![Explore UI](https://refract-org.github.io/refract-docs/explore-ui.svg)
 
-[→ Try the live demo](https://refract-org.github.io/refract-docs/demo/)
-
-What you'll see:
-
-```
-Analysis of "Bitcoin" at depth brief found 330 events across 20 revisions.
-
-[2009-03-08] wikilink_added (rev 275832581→275832690)
-  Section: body
-  target: cryptography
-
-[2009-12-10] citation_added (rev 308164432→308164529)
-  Section: (lead)
-  ref: sourceforge.net/projects/bitcoin/
-
-[2009-12-12] template_added (rev 308164529→308180771)
-  Section: body
-  template: primarysources
-```
-
-Full output (330 events): [`docs/example-output.md`](./docs/example-output.md).
+> **Install once, run fast**: `npx` downloads on every run (~20s cold start).
+> For repeated use: `bun add @refract-org/cli` (install once, `refract` command available instantly).
 
 ### Other install options
 
 | Method | Command |
 |--------|---------|
 | **Bun** (if installed) | `bunx @refract-org/cli analyze "Bitcoin"` |
-| **Docker** (prebuilt) | `docker run ghcr.io/refract-org/cli analyze "Bitcoin"` |
+| **Bun** (one command) | `bunx @refract-org/cli analyze "Bitcoin"` |
 | **Local install** | `bun add @refract-org/cli && refract analyze "Bitcoin"` (or `wikihistory`) |
 | **Build from source** | `git clone https://github.com/refract-org/refract && cd refract && bun install && bun run build` |
 

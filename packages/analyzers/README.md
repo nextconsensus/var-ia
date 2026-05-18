@@ -36,3 +36,16 @@ import { sectionDiffer, citationTracker, revertDetector } from "@refract-org/ana
 ```
 
 [Refract](https://github.com/refract-org/sequent) · [Docs](https://github.com/refract-org/sequent-docs) · [npm](https://www.npmjs.com/package/@refract-org/analyzers)
+
+### semantic-enrichment (v0.5.0+)
+
+Deterministic text analysis for evidence events. No model, no API.
+
+- `computeCertaintyProfile(text)` — counts certainty/hedging markers
+- `computeDirectionSignal(before, after)` — strengthening/weakening/neutral
+- `computeEditMagnitude(beforeLen, afterLen)` — minor/moderate/major
+- `computeContentChange(eventType, before, after)` — introduction/removal/expansion/etc.
+- `extractKeyTerms(text)` — significant terms from text
+- `extractQuantitativeFindings(text)` — p-values, HR, n-values, CIs
+
+Exported from `@refract-org/analyzers`.

@@ -57,3 +57,17 @@ Use Conventional Commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test
 - ❌ Automated Wikipedia editing or templating
 - ❌ Claims about "truth" or "accuracy" of Wikipedia content
 - ❌ Healthcare-specific vocabulary (drug names, FDA, clinical trials, payer language) — this repo is domain-agnostic
+
+## What Belongs in Refract vs. NextConsensus
+
+Refract is domain-neutral infrastructure for observing how knowledge changes.
+It belongs in refract if it is:
+- Deterministic (byte-reproducible, no model)
+- Domain-neutral (works on any Wikipedia article, wiki, or document)
+- A fact about what changed (not a judgment about whether it matters)
+
+Domain-specific classification (e.g., healthcare safety vs. efficacy), materiality
+scoring, and decision workflows belong in downstream applications like
+[NextConsensus](https://nextconsensus.com) — not in this repository.
+
+See [repository-boundary.md](./docs/repository-boundary.md) for the full boundary.

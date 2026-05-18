@@ -196,3 +196,16 @@ Initial release.
 - `@refract-org/cli` 0.3.0 — CLI tool
 - `@refract-org/persistence` 0.1.0 — SQLite persistence
 - `@refract-org/eval` 0.1.0 — evaluation harness
+
+## 0.5.0 — Semantic Enrichment (2026-05-18)
+
+### Added
+- 6 new deterministic fields on every `EvidenceEvent`: `editMagnitude`, `contentChange`, `keyTerms`, `certaintyProfile`, `directionSignal`, `quantitativeFindings`
+- New types: `EditMagnitude`, `ContentChange`, `CertaintyProfile`, `DirectionSignal`, `QuantitativeFinding`
+- `semantic-enrichment.ts` analyzer: `computeCertaintyProfile()`, `computeDirectionSignal()`, `computeEditMagnitude()`, `computeContentChange()`, `extractKeyTerms()`, `extractQuantitativeFindings()`
+- All fields are deterministic — no model, no API, byte-reproducible on every run
+
+### Design
+- Fields that require domain knowledge (e.g., "is this a safety edit?") belong in downstream consumers
+- Fields that are pure text analysis (e.g., "how long is this edit?") belong in refract
+- This preserves the two-knowledge-split: refract observes, consumers interpret

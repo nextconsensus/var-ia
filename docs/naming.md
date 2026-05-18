@@ -39,3 +39,15 @@ import type { EvidenceEvent } from "@refract-org/evidence-graph";
 refract --version    # 0.5.6
 which refract        # points to @refract-org/cli binary
 ```
+
+## Semantic Enrichment Types (v0.5.0+)
+
+| Type | Values |
+|------|--------|
+| `EditMagnitude` | `"minor"`, `"moderate"`, `"major"` |
+| `ContentChange` | `"introduction"`, `"removal"`, `"expansion"`, `"compression"`, `"refinement"`, `"rewrite"` |
+| `CertaintyProfile` | `{ high: number, medium: number, low: number, hedging: number }` |
+| `DirectionSignal` | `"strengthening"`, `"weakening"`, `"neutral"` |
+| `QuantitativeFinding` | `{ type: string, value: string, raw: string }` |
+
+All fields are optional on `EvidenceEvent`. Existing consumers ignore them.

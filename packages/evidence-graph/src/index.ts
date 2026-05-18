@@ -61,3 +61,5 @@ export type {
 } from "./schemas/report.js";
 export type { DiffLine, DiffResult, Revision, Section, SectionChange } from "./schemas/revision.js";
 export type { SourceAuthority, SourceLineage, SourceRecord, SourceReplacement, SourceType } from "./schemas/source.js";
+
+export type { EditMagnitude, ContentChange, CertaintyProfile, DirectionSignal, QuantitativeFinding } from "./schemas/evidence.js";

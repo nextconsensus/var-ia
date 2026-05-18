@@ -84,3 +84,18 @@ interface EvidenceEvent {
   timestamp: string;          // ISO 8601
 }
 ```
+
+## Semantic Enrichment Fields (v0.5.0+)
+
+Every event now carries 6 deterministic enrichment fields computed from the `before`/`after` text.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `editMagnitude` | `"minor" \| "moderate" \| "major"` | Character count thresholds |
+| `contentChange` | `"introduction" \| "removal" \| "expansion" \| "compression" \| "refinement" \| "rewrite"` | Nature of the text change |
+| `keyTerms` | `string[]` | Extracted significant terms (6+ chars, filtered for noise) |
+| `certaintyProfile` | `{ high: number, medium: number, low: number, hedging: number }` | Counts of certainty/hedging markers |
+| `directionSignal` | `"strengthening" \| "weakening" \| "neutral"` | Computed from certainty shift between before/after |
+| `quantitativeFindings` | `QuantitativeFinding[]` | Extracted numbers (p-values, hazard ratios, n-values, CIs) |
+
+All fields are optional (`?`). Existing consumers ignore them. All computed deterministically — no model, no API, byte-reproducible.

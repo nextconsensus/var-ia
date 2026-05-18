@@ -67,3 +67,5 @@ Analysis of "Bitcoin" at depth brief found 330 events across 20 revisions.
 Every event is **deterministic**: the same analysis on the same revision range
 always produces the same output. No model involved. No interpretation. Just
 structured, reproducible fact extraction from the Wikipedia API.
+
+> **v0.5.0+**: Events now include 6 enrichment fields (`editMagnitude`, `contentChange`, `keyTerms`, `certaintyProfile`, `directionSignal`, `quantitativeFindings`). These are computed deterministically during the analyze pipeline. Example output below shows the base event format; enrichment fields are present on all events when using v0.5.0+.

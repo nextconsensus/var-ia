@@ -29,6 +29,27 @@ interpretation needed, the edit itself is the event. L1 captures these as
 `category_removed`/`category_added` events, byte-for-byte reproducible from
 the API response.
 
+
+### Semantic Enrichment (v0.5.0+)
+
+Every `EvidenceEvent` now carries 6 deterministic enrichment fields computed from
+the `before`/`after` text during the analyze pipeline. These are **not model outputs** —
+they are deterministic text analysis, byte-reproducible on every run.
+
+| Field | What it captures |
+|-------|-----------------|
+| `editMagnitude` | Character count thresholds (minor/moderate/major) |
+| `contentChange` | Nature of the text change (introduction/removal/expansion/compression/refinement/rewrite) |
+| `keyTerms` | Extracted significant terms from the edited text |
+| `certaintyProfile` | Counts of certainty/hedging markers (high/medium/low/hedging) |
+| `directionSignal` | Computed from certainty shift between before/after (strengthening/weakening/neutral) |
+| `quantitativeFindings` | Extracted numbers (p-values, hazard ratios, n-values, confidence intervals) |
+
+See `packages/analyzers/src/semantic-enrichment.ts` for the implementation.
+
+Domain-specific classification (e.g., "is this edit about safety or efficacy?") belongs in
+downstream consumers. Refract provides the deterministic substrate; applications add the interpretation.
+
 ## Layer 2: Independent Ground Truth
 
 **What it answers**: Did real-world editorial processes validate the signal?

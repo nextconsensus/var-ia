@@ -53,7 +53,7 @@ const program = new Command();
 program
   .name("refract")
   .description("Wikipedia edit history analysis — deterministic L1 observation engine")
-  .version("0.5.3")
+  .version("0.5.7")
   .addHelpCommand("help [command]", "show help for a specific command");
 
 // ── init ──

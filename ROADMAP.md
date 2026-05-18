@@ -98,3 +98,12 @@ Active workqueue task: [MAINT-01](./.github/workqueue/MAINT-01.md) — Cross-rep
 - **INFRA-01:** Real L3 Eval — ground truth labels, calibration, benchmark pages
 - **INFRA-02:** Scheduled Re-Observation — `refract watch` + `cron` with notifications
 - **INFRA-04:** Watch Channels — Slack, email, webhook notifications
+
+## 0.5.0 — Semantic Enrichment ✅ COMPLETE (2026-05-18)
+
+- [x] 6 deterministic enrichment fields on every EvidenceEvent: `editMagnitude`, `contentChange`, `keyTerms`, `certaintyProfile`, `directionSignal`, `quantitativeFindings`
+- [x] New types: `EditMagnitude`, `ContentChange`, `CertaintyProfile`, `DirectionSignal`, `QuantitativeFinding`
+- [x] `semantic-enrichment.ts` analyzer with extraction functions
+- [x] Integrated into analyze pipeline — all events enriched before return
+- [x] All fields are deterministic — no model, no API, byte-reproducible
+- [x] Domain-specific classification (safety, efficacy, dosing…) stays in downstream consumers

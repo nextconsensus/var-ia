@@ -1,108 +1,105 @@
-# Agent Instructions for refract
+# Refract — Agent Instructions
 
-Refract is the open-source deterministic observation engine built and maintained
-by [NextConsensus](https://nextconsensus.com). It is domain-neutral
-infrastructure for MediaWiki and public revision histories.
+Refract is an open-source deterministic observation engine for knowledge change.
+It ingests Wikipedia/document histories, computes diffs, and emits structured
+provenance events.
+
+## Essential Commands
+
+```bash
+# Analyze any Wikipedia page
+refract analyze "PageTitle" --depth brief
+
+# Track a specific claim across revisions
+refract claim "PageTitle" --text "exact claim text"
+
+# Export as NDJSON for downstream consumption
+refract export "PageTitle" --format ndjson > events.ndjson
+
+# Watch for new edits (60s polling)
+refract watch "PageTitle"
+
+# Start MCP server for agent tool access
+refract mcp
+
+# Guided onboarding (show a new user what Refract does)
+refract init
+```
+
+## Developer Commands
+
+```bash
+bun install --frozen-lockfile
+bun run build      # tsc -b (all packages)
+bun run typecheck  # tsc --noEmit
+bun run test       # vitest run (all packages)
+bun run lint       # biome lint packages/
+```
+
+## Architecture
+
+- **packages/evidence-graph**: Core types, schemas (no dependencies)
+- **packages/ingestion**: MediaWiki API adapters
+- **packages/analyzers**: Deterministic analyzers (sections, citations, templates, reverts, semantic enrichment)
+- **packages/cli**: CLI tool (`refract` command)
+- **packages/persistence**: SQLite storage (bun:sqlite)
+- **packages/eval**: Evaluation harness
+
+## Semantic Enrichment (v0.5.0+)
+
+Every event carries 6 deterministic enrichment fields:
+- `editMagnitude` — minor/moderate/major
+- `contentChange` — introduction/removal/expansion/compression/refinement/rewrite
+- `keyTerms` — extracted significant terms
+- `certaintyProfile` — counts of certainty/hedging markers
+- `directionSignal` — strengthening/weakening/neutral
+- `quantitativeFindings` — p-values, hazard ratios, n-values, CIs
 
 ## Repository Boundary
 
-Refract = generic public-knowledge observability
-NextConsensus = healthcare-specific decision intelligence
+Refract is domain-neutral. Do NOT add:
+- Healthcare-specific logic, drug names, FDA, clinical trials, payer language
+- Domain-specific source weighting or materiality scoring
+- Model interpretation or prediction
+- Those belong in downstream applications like NextConsensus
 
-Repository boundary: read `docs/repository-boundary.md` before adding scope.
-Refract observes change. NextConsensus judges healthcare decision relevance.
+See `docs/repository-boundary.md` and `docs/refract-and-nextconsensus.md`.
 
-## Build & Verify Commands
+## MCP Server
 
-```bash
-bun run build       # tsc -b (composite project references, all packages)
-bun run typecheck   # tsc --noEmit (full typecheck, no emit)
-bun run lint        # biome lint packages/
-bun run format      # biome format --write packages/
-bun run test        # vitest run (runs *.test.ts across all packages)
-bun run clean       # rm -rf packages/*/dist
+Refract exposes 5 MCP tools: `analyze`, `claim`, `export`, `cron`, `classify`.
+Start with `refract mcp`. Agents connect via stdio.
+See `docs/mcp.md` for client configuration (Claude Desktop, Cline, etc.).
+
+## When Using Refract in Code
+
+```typescript
+import { MediaWikiClient } from "@refract-org/ingestion";
+import { sectionDiffer, citationTracker } from "@refract-org/analyzers";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
+
+const client = new MediaWikiClient();
+const revisions = await client.fetchRevisions("Finerenone", { limit: 20 });
 ```
 
-**Gate**: `bun run build && bun x biome ci packages/ && bun run typecheck && bun run check:boundaries && bun run test` must pass before merge.
+## Architectural Doctrine
 
-## Package Manager & Runtime
+Refract is **deterministic infrastructure**, not an agentic reasoning system.
 
-- **Runtime**: Bun (do not use npm/yarn/pnpm — use `bun` for install, run, and test)
-- **Module system**: ESM (`"type": "module"` in root package.json)
+What Refract does (deterministic, byte-reproducible):
+- Ingest revision histories
+- Normalize sources into a common document model
+- Compute structural and semantic diffs
+- Classify changes via deterministic analyzers
+- Emit structured provenance events
+- Build timelines and export data
 
-## Monorepo Structure
+What Refract does NOT do (belongs in downstream applications):
+- Run autonomous agents or planners
+- Make domain-specific judgments
+- Score materiality or clinical significance
+- Forecast claim-state transitions
+- Synthesize recommendations
 
-```
-packages/
-├── evidence-graph/   # Core types/schemas (no deps) — Published
-├── ingestion/        # Wikimedia API adapters — Published
-├── analyzers/        # Deterministic analyzers (section, citation, revert, template) — Published
-├── cli/              # CLI tool (refract / wikihistory) — Published
-├── persistence/      # SQLite persistence (bun:sqlite) — Not published
-├── eval/             # Evaluation harness (L3) — Not published
-└── observable/       # Observable Framework data loader — Not published
-```
-
-Each package has `src/index.ts` as its public barrel. `dist/` is build output.
-
-## Architecture (Two-Knowledge-Split)
-
-- **Layer 1** (Deterministic): Wikipedia fetch, diffs, sections, citations, reverts. No model. Byte-for-byte reproducible.
-- **Layer 2** (Independent Ground Truth): Talk page consensus, RFC closures, ArbCom decisions. Never redefined by pipeline output.
-- **Downstream interpretation**: Model-assisted L2 lives in NextConsensus, which consumes Refract's deterministic event stream without modifying it.
-
-## Code Conventions
-
-### Imports
-- **Cross-package types**: `import type { Foo } from "@refract-org/evidence-graph"`
-- **Cross-package runtime**: `import { Bar } from "@refract-org/analyzers"`
-- **Intra-package**: Use relative paths with `.js` extension: `import { baz } from "./baz.js"`
-- **Node built-ins**: `import { createHash } from "node:crypto"`
-- **Bun built-ins**: `import { Database } from "bun:sqlite"`
-
-Always prefer `import type` for type-only imports. Never import from `dist/` in source code (tests may do so for dynamic integration testing).
-
-### Naming
-- **Files**: kebab-case (`mediawiki-client.ts`, `section-differ.ts`)
-- **Interfaces/types**: PascalCase (`RevisionFetcher`, `EvidenceEvent`)
-- **Functions**: camelCase (`createClaimIdentity`, `fetchRevisions`)
-- **Const singletons**: camelCase (`sectionDiffer`, `citationTracker`)
-- **String literal union members**: snake_case (`"citation_added"`, `"page_moved"`)
-- **Config types**: PascalCase with `Config` suffix (`EvalConfig`)
-
-### Tests
-- Framework: Vitest with `globals: true` (no need to import `describe`/`it`/`expect`)
-- Location: `src/__tests__/*.test.ts` (excluded from tsc via tsconfig `exclude`)
-- Timeout: 30s default (configurable per-test for integration tests hitting live Wikipedia API)
-
-### General
-- No comments unless explaining a non-obvious constraint (not what code does — what it must not do)
-- Export only what's needed from each package's `index.ts`
-
-## Commit Convention
-
-Conventional Commits: `feat:`, `fix:`, `refactor:`, `chore:`, `docs:`, `test:`.
-
-## PR Requirements (from CONTRIBUTING.md)
-
-- PR description must state what the code shows, not what it claims
-- New analyzers must include an eval (even a single sample page)
-- Architecture changes require an ARCHITECTURE.md update in the same PR
-
-## Roadmap & Work Queue
-
-- **ROADMAP.md** — prioritized items by layer, with status table and dependency graph
-- **`.github/workqueue/{ID}.md`** — self-contained task prompts for agents to pick up
-- `ready` = unblocked, can be started; `blocked` = waiting on dependencies
-- After completing a task: (1) run gate, (2) update task status to `done`, (3) update ROADMAP.md to unblock dependents
-- Task file format: YAML frontmatter (id, status, priority, dependencies, packages, layer, effort) followed by What/Why/Context/Implementation/Invariants/Acceptance sections
-
-## Forbidden Contributions
-
-Features that: target individual editors, do sentiment/toxicity scoring, predict/forecast, automate Wikipedia editing, make truth/accuracy claims about content, or use healthcare-specific vocabulary.
-
-Do not add payer, guideline, clinical, regulatory, customer-workflow,
-healthcare decision-judgment, domain-specific source-weighting, decision
-threshold, production-backtest, outcome-data, model interpretation,
-model adapters, model routing, model consensus, or NextConsensus-private
-logic to this repo. Keep Refract agents focused on determinism, not judgment.
+The value is not "AI reasoning." The value is **deterministic knowledge-history
+infrastructure** — giving machines memory of how knowledge changed.

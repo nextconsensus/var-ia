@@ -90,3 +90,5 @@ export {
   sanitizeWikitext,
   stripWikitext,
 } from "./wikitext-parser.js";
+
+export { computeCertaintyProfile, computeDirectionSignal, computeEditMagnitude, computeContentChange, extractKeyTerms, extractQuantitativeFindings } from "./semantic-enrichment.js";

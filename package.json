@@ -1,6 +1,6 @@
 {
   "name": "refract",
-  "version": "0.2.1",
+  "version": "0.5.0",
   "type": "module",
   "private": true,
   "description": "A deterministic observation engine for public revision histories. Evidence, not truth.",
@@ -16,7 +16,10 @@
     "public-knowledge",
     "edit-history",
     "wikipedia",
-    "evidence-graph"
+    "evidence-graph",
+    "agent-tool",
+    "provenance",
+    "semantic-events"
   ],
   "engines": {
     "bun": ">=1.2.0",

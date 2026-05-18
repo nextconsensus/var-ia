@@ -10,6 +10,12 @@ import {
   diffCategories,
   diffObservations,
   diffWikilinks,
+  computeCertaintyProfile,
+  computeDirectionSignal,
+  computeEditMagnitude,
+  computeContentChange,
+  extractKeyTerms,
+  extractQuantitativeFindings,
   extractCategories,
   extractWikilinks,
   revertDetector,
@@ -721,6 +727,17 @@ export async function runAnalyze(
   // Stamp schema version on every event for version-resilient downstream consumption
   for (const e of events) {
     (e as unknown as Record<string, unknown>).schemaVersion = EVENT_SCHEMA_VERSION;
+  }
+
+  // Apply deterministic semantic enrichment
+  for (const event of events) {
+    const text = event.after || event.before || "";
+    event.editMagnitude = computeEditMagnitude((event.before||"").length, (event.after||"").length);
+    event.contentChange = computeContentChange(event.eventType, event.before||"", event.after||"");
+    event.keyTerms = extractKeyTerms(text);
+    event.certaintyProfile = computeCertaintyProfile(text);
+    event.directionSignal = computeDirectionSignal(computeCertaintyProfile(event.before||""), computeCertaintyProfile(event.after||""));
+    event.quantitativeFindings = extractQuantitativeFindings(text);
   }
 
   return { events, revisions: sortedRevs };
