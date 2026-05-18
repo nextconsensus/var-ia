@@ -1,6 +1,6 @@
 ---
 applyTo: "**/*.test.ts"
-description: "Vitest test conventions for varia"
+description: "Vitest test conventions for refract"
 ---
 # Test conventions
 

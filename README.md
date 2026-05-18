@@ -4,8 +4,12 @@
 [![Version](https://img.shields.io/github/v/release/refract-org/refract)](https://github.com/refract-org/refract/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-0f172a.svg)](./LICENSE)
 [![npm scope](https://img.shields.io/badge/npm-%40refract-org-2563eb.svg)](https://www.npmjs.com/org/refract-org)
+[![MCP](https://img.shields.io/badge/MCP-server-6366f1.svg)](https://refract-org.github.io/refract-docs/mcp/)
+
+> **262 tests passing** · **26 event types** · **14 tutorials** · **0 dependencies beyond Bun**
 
 **The open claim-history layer for public knowledge.**
+**AI agents can use it. [→ `refract mcp`](https://refract-org.github.io/refract-docs/mcp/)**
 
 > Refract reveals how claims change across public revision histories — where every
 > claim came from, what supported it, what challenged it, when it stabilized, and
@@ -92,15 +96,17 @@ The common architecture: **Refract extracts the mechanical facts. The downstream
 
 ## Complementary technologies
 
-Refract pairs naturally with modern tools. The event stream is standard NDJSON — anything that reads JSON or speaks HTTP can consume it.
+Refract pairs naturally with modern tools. The event stream is standard NDJSON — anything that reads JSON or speaks HTTP can consume it. See the [integrations docs](https://refract-org.github.io/refract-docs/integrations/) for full details.
 
 | Category | Technology | How they fit |
 |----------|-----------|-------------|
+| **Python / data science** | pandas, Jupyter, matplotlib | `refract-py` wraps the CLI and exports typed DataFrames. [Tutorial](https://refract-org.github.io/refract-docs/tutorials/python-sdk/) |
 | **Vector databases** | Pinecone, Weaviate, pgvector | Store claim embeddings alongside stability metadata. Query: "find claims like X that are stable and well-sourced." |
-| **RAG frameworks** | LangChain, LlamaIndex | Use Refract's stability signals as retrieval filters or reranking features. Attach claim provenance to each retrieved chunk. |
+| **RAG frameworks** | LangChain, LlamaIndex | Use Refract's stability signals as retrieval filters or reranking features. [LangChain loader](https://github.com/refract-org/refract-py/blob/main/src/refract_langchain.py) available in refract-py. |
 | **AI coding agents** | Claude Code, Cline, Codex CLI, OpenClaw | Agents connect via Refract's built-in MCP server (`refract mcp`) to read claim history and cite provenance. |
 | **MCP (Model Context Protocol)** | Any MCP client | `refract mcp` is a native MCP server with tools for analyze, claim, export, cron, and classify. |
 | **Data query** | DuckDB, ClickHouse | Query NDJSON output with SQL: `SELECT event_type, count(*) FROM 'events.jsonl' GROUP BY event_type;` |
+| **Monitoring** | Slack, Email, Webhooks, GitHub Actions | `refract cron` + `--notify-slack` for scheduled monitoring with alerts. [Tutorial](https://refract-org.github.io/refract-docs/tutorials/scheduled-monitoring/) |
 | **Streaming** | Kafka, Redpanda, Cloudflare Queues | Each `EvidenceEvent` is a message keyed by claimId for real-time monitoring. |
 | **Visualization** | Observable Framework, Mermaid, D3 | `refract visualize --format mermaid` produces Mermaid diagrams. Observable has a `@refract-org/observable` data loader. |
 | **Model serving** | OpenAI API, DeepSeek, Ollama, vLLM, Workers AI | Any OpenAI-compatible endpoint plugs into `refract classify`. Workers AI runs at the edge. |
@@ -125,6 +131,10 @@ refract export "Bitcoin" --bundle > bitcoin-bundle.json
 ```
 
 > **What you're seeing**: These are observed changes — deterministic facts extracted from revision history. Refract reports what changed, not whether a claim is true or false.
+
+![Explore UI](https://refract-org.github.io/refract-docs/explore-ui.svg)
+
+[→ Try the live demo](https://refract-org.github.io/refract-docs/demo/)
 
 What you'll see:
 
@@ -318,7 +328,7 @@ These repos extend the core engine:
 
 | Repo | Purpose |
 |------|---------|
-| [refract-docs](https://github.com/refract-org/refract-docs) | Public documentation site (quickstart, CLI, SDK, tutorials) |
+| [refract-docs](https://github.com/refract-org/refract-docs) | Public documentation site — [integrations](https://refract-org.github.io/refract-docs/integrations/), quickstart, CLI, SDK, tutorials |
 | [refract-labs](https://github.com/refract-org/refract-labs) | Experimental probes applying the engine to adjacent verticals |
 | [refract-ui](https://github.com/refract-org/refract-ui) | Standalone visualization — load JSONL, render timelines, diffs, citations |
 | [refract-demo-data](https://github.com/refract-org/refract-demo-data) | Safe, fictional datasets for the eval harness (no real PII or medical data) |

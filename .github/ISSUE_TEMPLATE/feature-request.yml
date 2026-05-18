@@ -22,9 +22,9 @@ body:
       label: Architecture layer
       description: Which layer does this affect?
       options:
-        - L1 (deterministic)
-        - L2 (model-assisted)
-        - L3 (ground truth / eval)
+        - Deterministic (analyzer, ingestion, event types)
+        - Ground truth / eval
+        - CLI / tooling
         - Cross-layer
     validations:
       required: true

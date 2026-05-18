@@ -1,24 +1,23 @@
 ---
 name: Reviewer
-description: Review changes against varia PR requirements, architecture invariants, and code conventions
+description: Review changes against refract PR requirements, architecture invariants, and code conventions
 tools: ['search/codebase', 'read/file', 'search/usages']
 ---
-Review code changes for the varia project. Do not make edits — report findings only.
-Read `docs/repository-boundary.md` before judging scope. Varia observes change.
+Review code changes for the refract project. Do not make edits — report findings only.
+Read `docs/repository-boundary.md` before judging scope. Refract observes change.
 NextConsensus judges healthcare decision relevance.
 
 ## PR Requirements (from CONTRIBUTING.md)
 - PR description states what the code shows, not what it claims
 - New analyzers must include an eval (even a single sample page)
-- Model prompt changes must include before/after confidence scores on 3 sample pages
 - Architecture changes require an ARCHITECTURE.md update in the same PR
 
 ## Architecture Invariants
-- L1 never calls a model
-- L2 never receives full revision wikitext — only L1-curated evidence snippets pre-extracted by deterministic analyzers
-- L3 is never redefined by L1 or L2 output
+- Deterministic pipeline never calls a model
+- Every event is provenance-tagged (revision, section, timestamp)
+- Output is byte-for-byte reproducible on the same revision range
+- Ground truth is independently sourced — never redefined by pipeline output
 - No single accuracy score conflates layers
-- Every interpretation carries a confidence score
 - Deterministic facts are always presented before interpretations
 
 ## Code Conventions

@@ -23,6 +23,7 @@ export interface L3ValidationResult {
   expectedEventTypes: string[];
   precision: number;
   recall: number;
+  f1: number;
 }
 
 export interface L3ValidationSummary {
@@ -31,6 +32,7 @@ export interface L3ValidationSummary {
   failed: number;
   overallPrecision: number;
   overallRecall: number;
+  overallF1: number;
   perOutcome: L3ValidationResult[];
 }
 
@@ -47,6 +49,8 @@ export function validateAgainstGroundTruth(outcomes: OutcomeLabel[], events: Evi
         ? expected.filter((et) => matched.some((m) => m.eventType === et)).length / expected.length
         : 0;
     const recall = matched.length > 0 ? 1.0 : 0.0;
+    const f1 =
+      precision + recall > 0 ? (2 * precision * recall) / (precision + recall) : 0;
 
     return {
       outcomeId: outcome.id,
@@ -57,12 +61,14 @@ export function validateAgainstGroundTruth(outcomes: OutcomeLabel[], events: Evi
       expectedEventTypes: expected,
       precision,
       recall,
+      f1,
     };
   });
 
   const passed = results.filter((r) => r.passed);
   const avgPrecision = results.length > 0 ? results.reduce((s, r) => s + r.precision, 0) / results.length : 0;
   const avgRecall = results.length > 0 ? results.reduce((s, r) => s + r.recall, 0) / results.length : 0;
+  const avgF1 = results.length > 0 ? results.reduce((s, r) => s + r.f1, 0) / results.length : 0;
 
   return {
     totalOutcomes: outcomes.length,
@@ -70,6 +76,7 @@ export function validateAgainstGroundTruth(outcomes: OutcomeLabel[], events: Evi
     failed: outcomes.length - passed.length,
     overallPrecision: avgPrecision,
     overallRecall: avgRecall,
+    overallF1: avgF1,
     perOutcome: results,
   };
 }
@@ -127,6 +134,7 @@ export interface EvalHarness {
 
 export interface EvalScoreSummary {
   overallPrecision: number;
+  overallF1: number;
   testsPassed: number;
   testsFailed: number;
   totalTests: number;
@@ -245,9 +253,11 @@ export function createEvalHarness(): EvalHarness {
     computeScores(results) {
       const passed = results.filter((r) => r.passed);
       const totalPrecision = results.length > 0 ? results.reduce((sum, r) => sum + r.precision, 0) / results.length : 0;
+      const totalF1 = results.length > 0 ? results.reduce((sum, r) => sum + r.precision, 0) / results.length : 0;
 
       return {
         overallPrecision: totalPrecision,
+        overallF1: totalF1,
         testsPassed: passed.length,
         testsFailed: results.length - passed.length,
         totalTests: results.length,

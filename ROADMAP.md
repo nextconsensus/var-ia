@@ -66,9 +66,12 @@ anything.
 - `@refract-org/eval` made public with full exports
 - `Revision` type now includes optional `user` field
 - Ingestion `fetch()` calls now have 30s timeouts
-- CI pinned to bun 1.2.x, all 602 tests pass
+- CI pinned to bun 1.2.x, all 264 tests pass (33 test files)
 
 **Current state:** Maintenance mode. Bug fixes, polish, and boundary hardening.
+
+See [COMPATIBILITY.md](./COMPATIBILITY.md) for the cross-repo version matrix and dependency chain.
+Active workqueue task: [MAINT-01](./.github/workqueue/MAINT-01.md) — Cross-repo compatibility audit.
 
 ## Completed — L1 Deterministic
 

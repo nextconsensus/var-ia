@@ -1,0 +1,44 @@
+name: Good First Issue
+description: A well-scoped task suitable for new contributors
+labels: ["good first issue", "help wanted"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: What needs to be done
+      description: Clear, specific task — no ambiguity
+    validations:
+      required: true
+  - type: textarea
+    id: approach
+    attributes:
+      label: Suggested approach
+      description: Where to start, which files, what to read first
+      placeholder: |
+        1. Read docs/events.md for event type context
+        2. Look at existing tests in packages/analyzers/src/__tests__/
+        3. The change goes in packages/analyzers/src/
+    validations:
+      required: true
+  - type: dropdown
+    id: package
+    attributes:
+      label: Package
+      options:
+        - evidence-graph
+        - ingestion
+        - analyzers
+        - cli
+        - persistence
+        - eval
+        - observable
+        - docs
+    validations:
+      required: true
+  - type: textarea
+    id: verification
+    attributes:
+      label: How to verify it's done
+      description: What test to run, what output to expect
+    validations:
+      required: true

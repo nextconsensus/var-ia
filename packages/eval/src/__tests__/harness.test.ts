@@ -129,7 +129,7 @@ describe("createEvalHarness", () => {
   });
 
   describe("computeScores", () => {
-    it("computes overall precision", () => {
+    it("computes overall precision and F1", () => {
       const harness = createEvalHarness();
       const test: EvalTestCase = {
         id: "t",
@@ -146,6 +146,7 @@ describe("createEvalHarness", () => {
       const summary = harness.computeScores([r1, r2]);
 
       expect(summary.overallPrecision).toBe(0.5);
+      expect(summary.overallF1).toBe(0.5);
       expect(summary.testsPassed).toBe(1);
       expect(summary.testsFailed).toBe(1);
       expect(summary.totalTests).toBe(2);

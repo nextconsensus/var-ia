@@ -123,12 +123,16 @@ export async function runClaim(
   console.log(`\n=== Claim Lineage Summary ===`);
   console.log(`Claim ID:    ${identity.claimId}`);
   console.log(`Page:        ${pageTitle}`);
-  console.log(`Refractnts:    ${variants.length}`);
+  console.log(`Variants:    ${variants.length}`);
   console.log(`State:       ${currentState}`);
   console.log(`First seen:  ${variants[0].observedAt} (rev ${variants[0].revisionId})`);
   console.log(
     `Last seen:   ${variants[variants.length - 1].observedAt} (rev ${variants[variants.length - 1].revisionId})`,
   );
+  console.log();
+  console.log(`The Claim ID is a deterministic hash — cite it to make your finding reproducible.`);
+  console.log(`Next: refract analyze "${pageTitle}" --depth detailed    (full event stream)`);
+  console.log(`      refract explore "${pageTitle}"                     (browser UI)`);
 }
 
 export function fuzzyFindText(claimText: string, plainText: string, preNormalized?: string): string {

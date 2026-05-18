@@ -1,5 +1,24 @@
 # Contributing
 
+## Getting started
+
+1. **Clone and build**: `git clone https://github.com/refract-org/refract && cd refract && bun install && bun run build`
+2. **Run the gate**: `bun run build && bun run typecheck && bun run test` — all must pass before you start
+3. **Pick a task**: [Good first issues](https://github.com/refract-org/refract/labels/good%20first%20issue) are scoped for new contributors. The [workqueue](.github/workqueue/) has `ready` tasks.
+4. **Read the architecture**: [ARCHITECTURE.md](./ARCHITECTURE.md) — 5 minutes, saves hours of wrong turns
+5. **Build a custom analyzer**: [Tutorial](https://refract-org.github.io/refract-docs/tutorials/custom-analyzer/) steps through the full cycle
+6. **Run `bun run ci` before opening a PR**: build + lint + typecheck + boundaries + test. All must pass.
+
+### What packages need what
+
+| Package | Read first | Test command |
+|---|---|---|
+| `evidence-graph` | Types and schemas — no runtime deps | `bun run test` |
+| `ingestion` | MediaWiki client, rate limiter | `bun run test` |
+| `analyzers` | Deterministic analyzers — pure functions over wikitext | `bun run test` |
+| `cli` | Commander-based CLI | `bun run build` |
+| `eval` | Evaluation harness, ground truth labels | `bun run test` |
+
 ## Repository Boundary
 
 Contributions must stay inside the open-source observability boundary described

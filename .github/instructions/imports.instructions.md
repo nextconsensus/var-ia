@@ -6,8 +6,8 @@ description: "Import and module conventions"
 
 ## Cross-package
 ```ts
-import type { EvidenceEvent } from "@var-ia/evidence-graph";
-import { sectionDiffer } from "@var-ia/analyzers";
+import type { EvidenceEvent } from "@refract-org/evidence-graph";
+import { sectionDiffer } from "@refract-org/analyzers";
 ```
 
 Always use `import type` for type-only imports. Biome's `useImportType` rule enforces this.

@@ -60,7 +60,7 @@ describe("validateAgainstGroundTruth", () => {
     expect(result.perOutcome[0].matchedEvents).toHaveLength(0);
   });
 
-  it("computes precision and recall", () => {
+  it("computes precision, recall, and F1", () => {
     const outcome: OutcomeLabel = {
       id: "test-3",
       source: "arbcom_decision",
@@ -79,7 +79,25 @@ describe("validateAgainstGroundTruth", () => {
     const r = result.perOutcome[0];
     expect(r.precision).toBe(0.5);
     expect(r.recall).toBe(1.0);
+    expect(r.f1).toBeCloseTo(0.667, 2);
     expect(r.matchedEvents).toHaveLength(1);
+  });
+
+  it("computes overall F1 in summary", () => {
+    const outcome: OutcomeLabel = {
+      id: "test-f1-summary",
+      source: "rfc_closure",
+      pageTitle: "Test",
+      description: "Test F1 summary",
+      observedAt: "2022-01-01T00:00:00Z",
+      resolution: "keep",
+      referenceUrl: "https://en.wikipedia.org/wiki/Talk:Test",
+      expectedEventTypes: ["section_reorganized", "sentence_removed"],
+    };
+    const events = [makeEvent("section_reorganized")];
+    const result = validateAgainstGroundTruth([outcome], events);
+    expect(result.overallF1).toBeGreaterThan(0);
+    expect(result.overallF1).toBeLessThanOrEqual(1);
   });
 
   it("OutcomeLabel type is never populated from pipeline output", () => {

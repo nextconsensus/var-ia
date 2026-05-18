@@ -8,7 +8,10 @@ import { runDiff } from "./commands/diff.js";
 import { runEval } from "./commands/eval.js";
 import { runExplore } from "./commands/explore.js";
 import { runExport } from "./commands/export.js";
+import { runInit } from "./commands/init.js";
 import { runMcpServer } from "./commands/mcp.js";
+import { runSnapshot } from "./commands/snapshot.js";
+import { runStream } from "./commands/stream.js";
 import { runVisualize } from "./commands/visualize.js";
 import { runWatch } from "./commands/watch.js";
 import { bold, cyan, dim, formatEvent, gray, green, heading, red, success } from "./render.js";
@@ -52,6 +55,14 @@ program
   .description("Wikipedia edit history analysis — deterministic L1 observation engine")
   .version("0.5.3")
   .addHelpCommand("help [command]", "show help for a specific command");
+
+// ── init ──
+program
+  .command("init")
+  .description("onboarding — run a quick analysis and see what Refract can do")
+  .action(async () => {
+    await runInit();
+  });
 
 // ── analyze ──
 const analyzeCmd = program
@@ -149,6 +160,18 @@ analyzeCmd.action(async (page, opts) => {
   if (events.length === 0) {
     console.log(gray("  No events detected."));
   }
+
+  if (events.length > 0) {
+    console.log();
+    console.log(dim("Next steps:"));
+    console.log(dim(`  View in browser  → refract explore "${page}"`));
+    console.log(dim(`  Track a claim    → refract claim "${page}" --text "claim text"`));
+    console.log(dim(`  Snapshot in time  → refract snapshot "${page}" --at 2024-01-15`));
+    console.log(dim(`  Export data      → refract export "${page}" --format ndjson > ${page.toLowerCase().replace(/\s+/g, "-")}-events.jsonl`));
+    console.log(dim(`  Monitor for changes → refract cron pages.txt --interval 24 --notify-slack`));
+    console.log(dim(`  Connect an AI    → refract mcp`));
+    console.log(dim(`  Full docs        → https://refract-org.github.io/refract-docs`));
+  }
 });
 
 // ── claim ──
@@ -167,6 +190,24 @@ claimCmd.action(async (page, opts) => {
   await runClaim(
     page,
     claimText,
+    !!opts.cache,
+    opts.api as string | undefined,
+    opts.cacheDir as string | undefined,
+    extractAuth(opts),
+  );
+});
+
+// ── snapshot ──
+const snapshotCmd = program
+  .command("snapshot <page>")
+  .description("reconstruct page state at a point in time")
+  .option("--at <date>", "target date (ISO 8601, e.g. 2024-01-15)", new Date().toISOString().slice(0, 10))
+  .option("-c, --cache", "cache revisions in SQLite");
+withGlobal(snapshotCmd);
+snapshotCmd.action(async (page, opts) => {
+  await runSnapshot(
+    page,
+    opts.at as string,
     !!opts.cache,
     opts.api as string | undefined,
     opts.cacheDir as string | undefined,
@@ -212,6 +253,19 @@ watchCmd.action(async (page, opts) => {
     opts.api as string | undefined,
     opts.interval as number | undefined,
     extractAuth(opts),
+  );
+});
+
+// ── stream ──
+const streamCmd = program
+  .command("stream [page]")
+  .description("live stream of Wikipedia edits via EventStreams")
+  .option("--wiki <wiki>", "wiki to stream (e.g., enwiki, dewiki)", "enwiki");
+withGlobal(streamCmd);
+streamCmd.action(async (page, opts) => {
+  await runStream(
+    page as string | undefined,
+    opts.wiki as string | undefined,
   );
 });
 

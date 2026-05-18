@@ -1,13 +1,13 @@
 name: Migration Help — I used to do X with WikiWho/ORES
-description: Tell us what you used to do with another tool, and we'll show you the Varia equivalent.
+description: Tell us what you used to do with another tool, and we'll show you the Refract equivalent.
 title: "[migration] "
 labels: ["migration", "question"]
 body:
   - type: markdown
     attributes:
       value: |
-        Varia provides deterministic, provenance-tagged evidence where other tools provide raw diffs or ML scores.
-        Fill this out and we'll show you the Varia equivalent.
+        Refract provides deterministic, provenance-tagged evidence where other tools provide raw diffs or ML scores.
+        Fill this out and we'll show you the Refract equivalent.
 
   - type: dropdown
     id: from-tool

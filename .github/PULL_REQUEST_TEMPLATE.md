@@ -8,20 +8,19 @@
 
 ## Type of change
 
-- [ ] L1 (deterministic)
-- [ ] L2 (model-assisted)
-- [ ] L3 (eval / ground truth)
-- [ ] Infrastructure / tooling
+- [ ] Deterministic (analyzer, ingestion, event types)
+- [ ] Ground truth / eval
+- [ ] CLI / tooling
 - [ ] Documentation
+- [ ] Infrastructure / CI
 
 ## Verification
 
 - [ ] `bun run build` passes
-- [ ] `bun run lint` passes
 - [ ] `bun run typecheck` passes
 - [ ] `bun run test` passes
+- [ ] `bun x biome ci packages/` passes
 - [ ] New analyzers include an eval (even single sample page)
-- [ ] Model prompt changes include before/after confidence scores on 3 pages
 - [ ] Architecture changes update ARCHITECTURE.md
 
 ## Scope check

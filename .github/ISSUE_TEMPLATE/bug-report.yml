@@ -15,22 +15,22 @@ body:
       label: Reproduction
       description: Exact command, URL, or code snippet
       placeholder: |
-        wikihistory analyze "Page name" --depth detailed
+        refract analyze "Page name" --depth detailed
     validations:
       required: true
   - type: input
     id: version
     attributes:
       label: Version
-      description: Output of `wikihistory --version` or package.json version
+      description: Output of `refract --version` or package.json version
     validations:
       required: true
   - type: textarea
     id: environment
     attributes:
       label: Environment
-      description: bun version, OS
+      description: Bun version, OS
       placeholder: |
-        Bun 1.2.x, macOS 15
+        Bun 1.3.x, macOS 15
     validations:
       required: false
